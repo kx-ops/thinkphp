@@ -1,0 +1,13 @@
+:80 {
+    # 设置网站根目录
+    root * /srv/public
+    
+    # 启用压缩
+    encode gzip
+    
+    # 静态文件处理
+    file_server
+    
+    # 将 PHP 请求转发给本地的 PHP-FPM (127.0.0.1:9000)
+    php_fastcgi 127.0.0.1:9000
+}
