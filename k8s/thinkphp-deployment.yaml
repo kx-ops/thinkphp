@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: thinkphp-deployment
+  labels:
+    app: thinkphp
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: thinkphp
+  template:
+    metadata:
+      labels:
+        app: thinkphp
+    spec:
+      containers:
+      - name: thinkphp-container
+        image: ghcr.io/kx-ops/thinkphp:main
+        ports:
+        - containerPort: 80
+        env:
+        - name: ENV_VAR_NAME
+          value: "VALUE"
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "500m"
+          limits:
+            memory: "512Mi"
+            cpu: "1"
