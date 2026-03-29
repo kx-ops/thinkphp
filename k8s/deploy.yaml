@@ -25,7 +25,7 @@ spec:
     spec:
       containers:
       - name: php-nginx
-        image: ghcr.io/kx-ops/thinkphp:3f80cbebb74c725c622bc8f1d11dd7cd740ea978
+        image: ghcr.io/kx-ops/thinkphp:b776e9dc63f7851d45a9a4c32bee5bec8e92e6b3
         ports:
         - containerPort: 80
         
