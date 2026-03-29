@@ -2,13 +2,18 @@ name: Build and Deploy to GHCR
 
 on:
   push:
+<<<<<<< HEAD
     branches:  [ main, master ]
       paths:                      # 只有这些文件变化才触发构建（优化触发）
+=======
+    branches: [ main, master ]
+    paths:
+>>>>>>> 760b2379826fe516559ace80ddfe454a63930dc6
       - 'src/**'
       - 'docker/**'
       - 'Dockerfile'
       - '.dockerignore'
-  workflow_dispatch:            # 允许手动触发
+  workflow_dispatch:
 
 env:
   REGISTRY: ghcr.io
@@ -18,12 +23,18 @@ jobs:
   build-and-push:
     runs-on: ubuntu-latest
     permissions:
-      contents: write  
-      packages: write  
+      contents: write
+      packages: write
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+
+      # === 关键修复：必须添加这一步，启用支持缓存的 Buildx driver ===
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+        with:
+          driver: docker-container        # 明确指定支持 cache-to 的 driver
 
       - name: Log in to GHCR
         uses: docker/login-action@v3
@@ -31,6 +42,17 @@ jobs:
           registry: ${{ env.REGISTRY }}
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
+
+      # === 修复：缺少 metadata 步骤，导致 labels 报错 ===
+      - name: Extract metadata (tags & labels)
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          tags: |
+            type=sha,format=short
+            type=ref,event=branch
+            latest
 
       - name: Build and push
         uses: docker/build-push-action@v6
@@ -40,19 +62,19 @@ jobs:
           push: true
           tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
           labels: ${{ steps.meta.outputs.labels }}
-          cache-from: type=gha              # 从 GitHub Cache 加载缓存
-          cache-to: type=gha,mode=max       # 导出缓存到 GitHub Cache（mode=max 包含所有阶段的缓存）
-          build-args: |
-            BUILD_DATE=${{ fromJSON(steps.meta.outputs.json).labels['org.opencontainers.image.created'] }}
-          platforms: linux/amd64  
+          
+          # BuildKit 缓存（只更新代码时大幅加速）
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          platforms: linux/amd64
 
-      - name: Update Kubernetes YAML
+      - name: Update k8s YAML
         run: |
-          # 提取当前 Commit SHA
           IMAGE_TAG=${{ github.sha }}
-          sed -i "s|image: ghcr.io/${{ github.repository }}:.*|image: ghcr.io/${{ github.repository }}:${{ github.sha }}|g" k8s/deploy.yaml
-          git config --global user.name "GitHub Action"
-          git config --global user.email "action@github.com"
+          sed -i "s|image: ghcr.io/${{ github.repository }}:.*|image: ghcr.io/${{ github.repository }}:${IMAGE_TAG}|g" k8s/deploy.yaml
+          
+          git config --global user.name "kxops"
+          git config --global user.email "kxops@github.com"
           git add k8s/deploy.yaml
-          git commit -m "chore: update image tag to ${{ github.sha }} [skip ci]"
+          git commit -m "chore: update image tag to ${IMAGE_TAG} [skip ci]" || echo "No changes to commit"
           git push
