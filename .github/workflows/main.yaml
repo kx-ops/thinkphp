@@ -2,11 +2,13 @@ name: Build and Deploy to GHCR
 
 on:
   push:
-    branches:  [ main, master ]
-      paths:                      # 只有这些文件变化才触发构建（优化触发）
+    branches: [ main, master ]
+    paths:                      # 优化：只有这些路径变化才触发构建
       - 'src/**'
       - 'docker/**'
-  workflow_dispatch:            # 允许手动触发
+      - 'Dockerfile'
+      - '.dockerignore'
+  workflow_dispatch:            # 允许手动触发测试
 
 env:
   REGISTRY: ghcr.io
