@@ -1,0 +1,32 @@
+# --- PHP / Composer ---
+vendor/
+.phpunit.result.cache
+.php_cs.cache
+phpdocs/
+composer.phar
+
+# --- 敏感信息 (非常重要) ---
+.env
+.env.local
+.env.*.local
+*.pem
+*.key
+
+# --- 操作系统与 IDE ---
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+*.bak
+
+# --- 运行日志与缓存 ---
+storage/*.log
+storage/framework/cache/*
+storage/framework/sessions/*
+storage/framework/views/*
+bootstrap/cache/*
+
+# --- Docker 本地数据 ---
+docker-compose.override.yml
+.docker/

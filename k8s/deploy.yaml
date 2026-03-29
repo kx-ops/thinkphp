@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: php-app
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: php-app
+  template:
+    metadata:
+      labels:
+        app: php-app
+    spec:
+      containers:
+      - name: php-nginx
+        image: ghcr.io/your-user/your-repo:latest # 此行会被 GitHub Actions 自动修改
+        ports:
+        - containerPort: 80
+      imagePullSecrets:
+      - name: ghcr-login-secret # 必须配置，否则无法从 GitHub Packages 拉取镜像
