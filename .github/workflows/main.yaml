@@ -4,6 +4,12 @@ on:
   push:
     branches:
       - main 
+      paths:                      # 只有这些文件变化才触发构建（优化触发）
+      - 'src/**'
+      - 'docker/**'
+      - 'Dockerfile'
+      - '.dockerignore'
+  workflow_dispatch:            # 允许手动触发
 
 env:
   REGISTRY: ghcr.io
@@ -28,12 +34,18 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build and push
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@v6
         with:
           context: .
           file: ./docker/Dockerfile
           push: true
           tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha              # 从 GitHub Cache 加载缓存
+          cache-to: type=gha,mode=max       # 导出缓存到 GitHub Cache（mode=max 包含所有阶段的缓存）
+          build-args: |
+            BUILD_DATE=${{ fromJSON(steps.meta.outputs.json).labels['org.opencontainers.image.created'] }}
+          platforms: linux/amd64  
 
       - name: Update Kubernetes YAML
         run: |
