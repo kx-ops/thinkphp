@@ -18,4 +18,4 @@ spec:
         ports:
         - containerPort: 80
       imagePullSecrets:
-      - name: ghcr-login-secret # 必须配置，否则无法从 GitHub Packages 拉取镜像
+      - name: ghcr-login-secret 
