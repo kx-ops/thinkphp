@@ -21,6 +21,7 @@ RUN apk add --no-cache \
 
 # 配置 Nginx
 COPY ./docker/nginx.conf /etc/nginx/http.d/default.conf
+COPY ./docker/www.conf /usr/local/etc/php-fpm.d/www.conf
 
 # 复制源码
 COPY ./src /var/www/html

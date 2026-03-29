@@ -13,8 +13,9 @@ jobs:
   build-and-push:
     runs-on: ubuntu-latest
     permissions:
-      contents: write
-      packages: write
+      contents: write   # 用于更新 k8s/deploy.yaml 并 Push 回仓库
+      packages: write   # 必须！用于上传镜像到 GitHub Packages
+      id-token: write   # 如果使用了某些身份验证插件可能需要
 
     steps:
       - name: Checkout code
