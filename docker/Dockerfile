@@ -5,9 +5,19 @@ FROM php:8.3-fpm-alpine
 RUN apk add --no-cache \
     nginx \
     libpq-dev \
+    # --- 编译 Redis 扩展所需的临时工具 ---
+    $PHPIZE_DEPS \
+    linux-headers \
+    # ------------------------------------
     && docker-php-ext-install pdo pdo_mysql \
+    # 使用 pecl 安装 redis
     && pecl install redis \
-    && docker-php-ext-enable redis
+    && docker-php-ext-enable redis \
+    # --- 清理编译工具，减小镜像体积 ---
+    && apk del $PHPIZE_DEPS \
+    && rm -rf /tmp/pear \
+    # ------------------------------------
+    && mkdir -p /run/nginx
 
 # 配置 Nginx
 COPY ./docker/nginx.conf /etc/nginx/http.d/default.conf
