@@ -15,6 +15,6 @@ jobs:
       - name: Delete old package versions (keep latest 3)
         uses: actions/delete-package-versions@v5
         with:
-          package-type: 'container'         
-          package-name: 'thinkphp'  
+          package-type: 'container'
+          package-name: 'thinkphp'
           min-versions-to-keep: 3     
