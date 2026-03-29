@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: php-nginx
-        image: ghcr.io/your-user/your-repo:latest # 此行会被 GitHub Actions 自动修改
+        image: ghcr.io/kx-ops/thinkphp:latest
         ports:
         - containerPort: 80
       imagePullSecrets:
