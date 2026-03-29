@@ -30,4 +30,5 @@ COPY ./src /var/www/html
 RUN chown -R www-data:www-data /var/www/html
 
 # 启动脚本：同时启动 PHP-FPM 和 Nginx
-CMD php-fpm -D && nginx -g "daemon off;"
+RUN printf "#!/bin/sh\nphp-fpm -D\nexec nginx -g 'daemon off;'\n" > /entrypoint.sh && chmod +x /entrypoint.sh
+ENTRYPOINT ["/bin/sh", "/entrypoint.sh"]
