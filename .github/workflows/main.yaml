@@ -40,16 +40,9 @@ jobs:
       # 关键：自动更新 K8s 配置文件中的镜像 Tag 并回写仓库
       - name: Update Kubernetes YAML
         run: |
-          # 1. 执行替换（确保匹配路径与 YAML 中完全一致）
-          sed -i "s|image: ghcr.io/${{ github.repository_owner }}/thinkphp:.*|image: ghcr.io/${{ github.repository_owner }}/thinkphp:${{ github.sha }}|g" k8s/deploy.yaml
-          
-          # 2. 检查是否有文件变更
-          if git diff --exit-code k8s/deploy.yaml; then
-            echo "No changes to commit"
-            exit 0
-          fi
-
-          # 3. 如果有变更，执行提交
+          # 提取当前 Commit SHA
+          IMAGE_TAG=${{ github.sha }}
+          sed -i "s|image: ghcr.io/${{ github.repository }}:.*|image: ghcr.io/${{ github.repository }}:${{ github.sha }}|g" k8s/deploy.yaml
           git config --global user.name "GitHub Action"
           git config --global user.email "action@github.com"
           git add k8s/deploy.yaml
