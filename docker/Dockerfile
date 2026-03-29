@@ -14,6 +14,7 @@ RUN apk add --no-cache \
     # ------------------------------------
     && mkdir -p /run/nginx
 
+COPY ./docker/php-optimized.ini /usr/local/etc/php/conf.d/custom.ini
 COPY ./docker/nginx.conf /etc/nginx/http.d/default.conf
 COPY ./docker/www.conf /usr/local/etc/php-fpm.d/www.conf
 
