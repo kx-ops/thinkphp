@@ -2,8 +2,7 @@ name: Build and Deploy to GHCR
 
 on:
   push:
-    branches:
-      - main 
+    branches:  [ main, master ]
       paths:                      # 只有这些文件变化才触发构建（优化触发）
       - 'src/**'
       - 'docker/**'
