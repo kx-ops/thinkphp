@@ -39,7 +39,7 @@ jobs:
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
           tags: |
-            type=sha,format=short
+            type=sha,format=short,prefix=
             latest
 
       - name: Build and push
@@ -57,7 +57,7 @@ jobs:
 
       - name: 更新k8s 部署 YAML
         run: |
-          IMAGE_TAG=${{ github.sha }}
+          IMAGE_TAG: ${{ steps.meta.outputs.version }} 
           sed -i "s|image: ghcr.io/${{ github.repository }}:.*|image: ghcr.io/${{ github.repository }}:${IMAGE_TAG}|g" k8s/deploy.yaml
           git config --global user.name "kxops"
           git config --global user.email "kxops@github.com"
