@@ -57,16 +57,7 @@ jobs:
         run: |
           IMAGE_TAG=$(echo "${{ steps.meta.outputs.tags }}" | grep -oE '[0-9a-f]{7}' | head -n 1)
           
-          cd k8s
-          
-          # 2. 如果不存在 kustomization.yaml，则创建一个并将 deploy.yaml 纳管
-          if [ ! -f kustomization.yaml ]; then
-            echo "创建 kustomization.yaml..."
-            kustomize create --resources deploy.yaml
-          fi
-          
-          # 3. 使用 kustomize 修改镜像标签
-          kustomize edit set image ghcr.io/kx-ops/thinkphp=ghcr.io/kx-ops/thinkphp:${IMAGE_TAG}
+          kustomize edit set image ghcr.io/kx-ops/thinkphp=ghcr.io/kx-ops/thinkphp:${IMAGE_TAG} --project k8s/
 
           git config --global user.name "kxops"
           git config --global user.email "kxops@github.com"
