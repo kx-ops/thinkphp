@@ -1,0 +1,4 @@
+#!/bin/bash
+exec 2>&1
+cd /thinkphp
+exec su -s /bin/bash -c "php think xadmin:queue listen" unit

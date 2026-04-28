@@ -1,0 +1,101 @@
+{
+        "listeners": {
+                "*:80": {
+                        "pass": "routes",
+                        "forwarded": {
+                                "client_ip": "X-Forwarded-For",
+                                "protocol": "X-Forwarded-Proto",
+                                "source": [
+                                        "10.0.0.0/8",
+                                        "172.16.0.0/16",
+                                        "192.168.0.0/16"
+                                ]
+                        }
+                }
+        },
+
+        "routes": [
+                {
+                        "match": {
+                                "uri": [
+                                        "!/static/*",
+                                        "*.php",
+                                        "*.php/*"
+                                ]
+                        },
+
+                        "action": {
+                                "pass": "applications/thinkphp/direct"
+                        }
+                },
+                {
+                        "action": {
+                                "share": "/thinkphp/public$uri",
+                                "response_headers": {
+                                        "Cache-Control": "max-age=60, s-maxage=120",
+                                        "CDN-Cache-Control": "max-age=600"
+                                },
+
+                                "fallback": {
+                                        "pass": "applications/thinkphp/index"
+                                }
+                        }
+                }
+        ],
+
+        "applications": {
+                "thinkphp": {
+                        "type": "php",
+                        "processes": 20,
+                        "targets": {
+                                "direct": {
+                                        "root": "/thinkphp/public"
+                                },
+
+                                "index": {
+                                        "root": "/thinkphp/public",
+                                        "script": "index.php"
+                                }
+                        },
+
+                        "options": {
+                                "admin": {
+                                        "variables_order": "EGPCS",
+                                        "memory_limit": "1024M",
+                                        "expose_php": "0"
+                                },
+
+                                "user": {
+                                        "memory_limit": "1024M",
+                                        "max_execution_time": "30",
+                                        "upload_max_filesize": "100M",
+                                        "post_max_size": "100M",
+                                        "max_file_uploads": "50"
+                                }
+                        }
+                }
+        },
+
+        "access_log": {
+                "format": {
+                        "remote_addr": "$remote_addr",
+                        "time": "$time_local",
+                        "host": "$host",
+                        "method": "$method",
+                        "request": "$request_line",
+                        "response": "$status",
+                        "header_referer": "$header_referer",
+                        "header_user_agent": "$header_user_agent"
+                },
+
+                "if": "`${vars.status >= 400 ? true : false}`",
+                "path": "/dev/stdout"
+        },
+
+        "settings": {
+                "http": {
+                        "max_body_size": 104857600,
+                        "server_version": false
+                }
+        }
+}

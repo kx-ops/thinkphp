@@ -1,0 +1,15 @@
+.git
+.gitignore
+.dockerignore
+.ci/
+.github
+README.md
+docs/
+k8s/
+.env
+*.key
+*.pem
+.idea
+.vscode
+tmp/
+*.swp

@@ -1,0 +1,3 @@
+#!/bin/bash
+exec 2>&1
+exec unitd --no-daemon --control unix:/var/run/control.unit.sock --pid /var/run/unit.pid
