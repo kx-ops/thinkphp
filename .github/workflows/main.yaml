@@ -55,10 +55,14 @@ jobs:
           cache-to: type=gha,mode=max
           platforms: linux/amd64
 
-      - name: 更新k8s 部署 YAML
-        env:
-          IMAGE_TAG: ${{ steps.meta.outputs.version }}   # version 输出就是纯短 SHA（当只用 type=sha 时）
+      - name: 更新k8s 部署 YAML  
         run: |
+          IMAGE_TAG: ${{ steps.meta.outputs.version }}   # version 输出就是纯短 SHA（当只用 type=sha 时）
+          if [ "$IMAGE_TAG" == "latest" ]; then
+            IMAGE_TAG=$(echo "${{ steps.steps.meta.outputs.tags }}" | tr ',' '\n' | grep -v 'latest' | cut -d':' -f2 | head -n 1)
+          fi
+
+          echo "目标镜像标签: $IMAGE_TAG"
           sed -i "s|image: ghcr.io/${{ github.repository }}:.*|image: ghcr.io/${{ github.repository }}:${IMAGE_TAG}|g" k8s/deploy.yaml
 
           git config --global user.name "kxops"
