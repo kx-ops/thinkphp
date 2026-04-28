@@ -39,8 +39,9 @@ jobs:
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
           tags: |
-            type=sha,format=short,prefix=
             latest
+            type=sha,format=short,prefix=
+            
 
       - name: Build and push
         uses: docker/build-push-action@v6
@@ -58,8 +59,6 @@ jobs:
         env:
           IMAGE_TAG: ${{ steps.meta.outputs.version }}   # version 输出就是纯短 SHA（当只用 type=sha 时）
         run: |
-          echo "使用镜像标签: $IMAGE_TAG"
-
           sed -i "s|image: ghcr.io/${{ github.repository }}:.*|image: ghcr.io/${{ github.repository }}:${IMAGE_TAG}|g" k8s/deploy.yaml
 
           git config --global user.name "kxops"
