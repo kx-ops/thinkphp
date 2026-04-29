@@ -1,4 +1,4 @@
-name: Clean old GitHub Packages
+name: 定时清理 GitHub Packages
 
 on:
   schedule:
